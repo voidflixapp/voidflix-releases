@@ -17,7 +17,7 @@
 ## Download
 
 > **[⬇ Download VoidflixInstaller.exe](https://github.com/voidflixapp/voidflix-releases/releases/download/v1.3.0/VoidflixInstaller.exe)**
-> 
+>
 > Windows 10 / 11 · 64-bit · v1.3.0
 
 ---
@@ -48,7 +48,25 @@ Voidflix is a free Windows desktop app for streaming movies, TV shows, and anime
 2. Run the installer
 3. Launch Voidflix from your desktop or Start Menu
 
-> **Note:** Windows Defender may show a warning on first launch — this is a false positive common with Electron apps. The app is safe. You can verify by checking the source or building it yourself.
+> **Note:** Windows Defender may show a warning on first launch — this is a false positive common with Electron apps. The app is safe.
+
+---
+
+## ROMs (Retro Games)
+
+The arcade section requires ROMs to play games. We host a full collection via Google Drive.
+
+**[📦 Download ROM Pack (Google Drive)](https://drive.google.com/drive/folders/1G6Addboz5R_xMUyLevkGic-YyWDFC4wT?usp=drive_link)**
+
+Includes: NES · SNES · GBA · GBC · GB · N64 · Genesis · PSX
+
+**Setup:**
+1. Download the ROMs folder from the link above
+2. Open Voidflix → go to **Arcade**
+3. Click **Choose ROMs Folder** and select your downloaded folder
+4. Your library loads instantly and is remembered across restarts
+
+> Google Drive may show a virus scan warning for large folders — click **Download anyway** to proceed.
 
 ---
 
