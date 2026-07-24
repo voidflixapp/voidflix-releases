@@ -1,89 +1,145 @@
-<div align="center">
+# Voidflix Desktop
 
-<img src="https://raw.githubusercontent.com/voidflixapp/voidflix-releases/main/favicon.png" width="100" height="100" alt="Voidflix Logo"/>
-
-# VOIDFLIX
-
-**Stream movies, TV shows, and anime. Play retro games. No subscriptions.**
-
-[![Download](https://img.shields.io/badge/Download-Windows-1a8fff?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/voidflixapp/voidflix-releases/releases/download/v1.3.0/VoidflixInstaller.exe)
-[![Version](https://img.shields.io/badge/Version-1.3.0-white?style=for-the-badge)](https://github.com/voidflixapp/voidflix-releases/releases)
-[![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-0078d4?style=for-the-badge&logo=windows)](https://github.com/voidflixapp/voidflix-releases/releases/download/v1.3.0/VoidflixInstaller.exe)
-
-</div>
+Electron wrapper for Voidflix. Produces a single `.exe` installer for Windows.
 
 ---
 
-## Download
+## What's included
 
-> **[⬇ Download VoidflixInstaller.exe](https://github.com/voidflixapp/voidflix-releases/releases/download/v1.3.0/VoidflixInstaller.exe)**
->
-> Windows 10 / 11 · 64-bit · v1.3.0
-
----
-
-## What is Voidflix?
-
-Voidflix is a free Windows desktop app for streaming movies, TV shows, and anime — plus a built-in retro game emulator. No account required. No subscription. Clean, fast, and ad-free during playback.
-
----
-
-## Features
-
-| Feature | Details |
+| Feature | How it works |
 |---|---|
-| 🎬 Movies & TV | Browse and stream a massive library of titles |
-| 📺 Anime | Dedicated anime section powered by AniList — sub & dub |
-| 🕹️ Retro Games | Built-in emulator — NES, SNES, GBA, N64, Genesis, PSX |
-| 🚫 No Ads During Playback | Uninterrupted streams. Minimal popups. |
-| 🎮 Discord Rich Presence | Shows what you're watching or playing in Discord |
-| ⚡ Fast & Lightweight | Hardware-accelerated. Loads instantly. |
-| 🌑 Dark UI | Cinematic interface. Easy on the eyes. |
+| Custom titlebar | 32px drag region with minimize / maximize / close buttons. No OS chrome. |
+| DevTools disabled | All keyboard shortcuts and context menu access blocked at the `webContents` level. |
+| Embedded TMDB proxy | The `proxy.js` Express server is replaced by a lightweight `http.createServer` running in the Electron main process on `127.0.0.1:3579`. TMDB key stays server-side. |
+| Discord Rich Presence | Shows title + "Watching" / "Playing" + elapsed time in Discord. Updates on play/pause/close. |
+| Local ROM library | ROMs are read from a user-chosen folder. The Arcade page gets a folder picker. EmulatorJS receives a `data:` URL instead of a server path. |
+| NSIS installer | One-click `.exe` with desktop shortcut, Start Menu entry, and watch history preserved on uninstall. |
 
 ---
 
-## Installation
+## Setup
 
-1. Download **[VoidflixInstaller.exe](https://github.com/voidflixapp/voidflix-releases/releases/download/v1.3.0/VoidflixInstaller.exe)**
-2. Run the installer
-3. Launch Voidflix from your desktop or Start Menu
+### 1. Prerequisites
 
-> **Note:** Windows Defender may show a warning on first launch — this is a false positive common with Electron apps. The app is safe.
+- **Node.js** 18+ and **npm**
+- **Windows Build Tools** (for native modules): `npm install -g windows-build-tools`
+- Discord app running on the machine for Rich Presence to show
+
+### 2. Clone / create the project folder
+
+```
+voidflix-electron/
+  src/           ← Electron source (already here)
+  web/           ← YOUR VOIDFLIX WEB FILES GO HERE
+  assets/        ← favicon.ico, favicon.icns, favicon.png
+  roms/          ← optional: bundled ROMs (nes/, snes/, gba/, etc.)
+  app-patches/   ← already here
+  build.js       ← already here
+  package.json   ← already here
+```
+
+### 3. Copy your web files
+
+Copy all your existing Voidflix files into the `web/` folder:
+
+```
+web/
+  index.html
+  movies.html
+  tv.html
+  decades.html
+  emulation.html
+  detail.html
+  person.html
+  settings.html
+  admin.html
+  stream-unavailable.html
+  404.html
+  voidflix.js
+  style.css
+  favicon.png
+  tmdb-logo.svg
+```
+
+### 4. Add icons
+
+Place these in `assets/`:
+
+- `favicon.png`  — 256×256 PNG (copy from your web files)
+- `favicon.ico`  — Windows icon (convert your PNG at https://convertio.co)
+- `favicon.icns` — macOS icon (only needed for Mac builds)
+
+### 5. Discord app setup
+
+1. Go to https://discord.com/developers/applications
+2. Click **New Application** → name it **Voidflix**
+3. Copy the **Application ID** from the General Information page
+4. Open `src/main.js` and replace `'YOUR_DISCORD_CLIENT_ID'` with your ID
+5. Under **Rich Presence → Art Assets**, upload:
+   - `voidflix_logo` — your Voidflix logo image
+   - `arcade_icon` — a game controller image (for the Arcade section)
+   - `play` — a small play button icon (shown as the small image)
+
+### 6. Install dependencies
+
+```bash
+cd voidflix-electron
+npm install
+```
+
+### 7. Test in dev mode
+
+```bash
+npm start
+```
+
+This runs the build script first (copies `web/` → `app/`, injects scripts), then launches Electron.
+
+### 8. Build the installer
+
+```bash
+npm run build
+```
+
+Output: `dist/Voidflix-Setup-1.0.0.exe`
 
 ---
 
-## ROMs (Retro Games)
+## ROM setup
 
-The arcade section requires ROMs to play games. We host a full collection via Google Drive.
+ROMs are **not** bundled in the installer by default (they're large and potentially legally grey).
 
-**[📦 Download ROM Pack (Google Drive)](https://drive.google.com/drive/folders/1G6Addboz5R_xMUyLevkGic-YyWDFC4wT?usp=drive_link)**
+**Option A — Choose folder at runtime (recommended)**
+1. Launch Voidflix
+2. Go to Arcade
+3. Click **Choose ROMs Folder**
+4. Select a folder organised as:
+   ```
+   your-roms-folder/
+     nes/    ← .nes files
+     snes/   ← .sfc / .smc files
+     n64/    ← .n64 / .z64 files
+     gba/    ← .gba files
+     gbc/    ← .gbc files
+     gb/     ← .gb files
+     genesis/ ← .md / .gen files
+     psx/    ← .iso / .bin / .pbp files
+   ```
+5. The library loads instantly. The path is remembered across restarts.
 
-Includes: NES · SNES · GBA · GBC · GB · N64 · Genesis · PSX
-
-**Setup:**
-1. Download the ROMs folder from the link above
-2. Open Voidflix → go to **Arcade**
-3. Click **Choose ROMs Folder** and select your downloaded folder
-4. Your library loads instantly and is remembered across restarts
-
-> Google Drive may show a virus scan warning for large folders — click **Download anyway** to proceed.
-
----
-
-## Community
-
-<div align="center">
-
-[![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/CJNPFKjnpp)
-[![X](https://img.shields.io/badge/X-Follow-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/voidflixapp)
-[![YouTube](https://img.shields.io/badge/YouTube-Subscribe-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@voidflixapp)
-[![TikTok](https://img.shields.io/badge/TikTok-Follow-000000?style=for-the-badge&logo=tiktok&logoColor=white)](https://www.tiktok.com/@officialvoidflixapp)
-[![Instagram](https://img.shields.io/badge/Instagram-Follow-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/voidflixapp)
-
-</div>
+**Option B — Bundle ROMs into the installer**
+Drop files into `roms/<console>/` before running `npm run build`.
+They'll be copied into the installer under `resources/roms/`.
 
 ---
 
-<div align="center">
-<sub>© 2026 Voidflix · Free to use · Not affiliated with any streaming service</sub>
-</div>
+## Architecture notes
+
+- `src/main.js` — main process: window, proxy server, Discord RPC, ROM IPC handlers
+- `src/preload.js` — context bridge: exposes `window.electronAPI` to renderer
+- `src/titlebar.js` — injected into every HTML page; draws the custom drag bar
+- `src/electron-adapter.js` — monkey-patches `startActivityHeartbeat`, `fetch('/api/roms')`, and `playGame` for the desktop context
+- `app-patches/emulation-electron-patch.js` — adds the ROM folder picker UI and `data:` URL loader to the Arcade page
+- `build.js` — copies `web/` → `app/`, patches `TMDB_BASE`, injects script tags
+
+The web source files in `web/` are **never modified**. All patching happens in `app/` at build time.

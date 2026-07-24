@@ -1,0 +1,108 @@
+{
+  "name": "voidflix",
+  "productName": "Voidflix",
+  "version": "1.0.0",
+  "description": "Voidflix — stream movies, TV, and play retro games",
+  "main": "src/main.js",
+  "author": "Voidflix",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "node build.js && electron .",
+    "build": "node build.js && electron-builder --win",
+    "build:mac": "node build.js && electron-builder --mac",
+    "build:linux": "node build.js && electron-builder --linux",
+    "pack": "node build.js && electron-builder --dir"
+  },
+  "dependencies": {
+    "discord-rpc": "^4.0.1"
+  },
+  "devDependencies": {
+    "electron": "^29.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.voidflix.app",
+    "productName": "Voidflix",
+    "copyright": "Voidflix",
+    "asar": true,
+    "asarUnpack": [
+      "assets/**"
+    ],
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist"
+    },
+    "files": [
+      "src/**",
+      "app/**",
+      "assets/**",
+      "!roms/**"
+    ],
+    "extraResources": [
+      {
+        "from": "roms",
+        "to": "roms",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/favicon.ico",
+      "artifactName": "Voidflix-Setup-${version}.exe",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "assets/favicon.ico",
+      "uninstallerIcon": "assets/favicon.ico",
+      "installerHeaderIcon": "assets/favicon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Voidflix",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": true,
+      "include": "installer.nsh"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "assets/favicon.icns",
+      "category": "public.app-category.entertainment"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/favicon.png",
+      "category": "AudioVideo"
+    }
+  },
+  "allowScripts": {
+    "electron@29.4.6": true,
+    "github:devsnek/node-register-scheme#e7cc9a63a1f512565da44cb57316d9fb10750e17": true
+  }
+}
